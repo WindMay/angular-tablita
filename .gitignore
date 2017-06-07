@@ -1,0 +1,90 @@
+$ cat .gitignore
+$ cat /demo/.gitignore
+/node_modules
+/dist
+/documentation
+*.log
+*.tgz
+# compiled output
+/dist
+/tmp
+/out-tsc
+
+# dependencies
+/demo/node_modules
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+testem.log
+/typings
+
+# e2e
+/e2e/*.js
+/e2e/*.map
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# IDEs and editors
+/demo/.idea
+/demo/.project
+/demo/.classpath
+/demo/.c9/
+/demo/*.launch
+/demo/.settings/
+/demo/*.sublime-workspace
+
+# IDE - VSCode
+/demo/.vscode/*
+/demo/!.vscode/settings.json
+/demo/!.vscode/tasks.json
+/demo/!.vscode/launch.json
+/demo/!.vscode/extensions.json
+
+# misc
+/demo/.sass-cache
+/demo/connect.lock
+/demo/coverage
+/demo/libpeerconnection.log
+/demonpm-debug.log
+/demotestem.log
+/demo/typings
+
+# e2e
+/demo/e2e/*.js
+/demo/e2e/*.map
+
+# misc
+/demo/enviroments
+/demo/.firebaserc
+/demo/firebasecred.ts
+/demo/.gitignore
+/demo/.*
+/demo/*/.*
+/demo/**/.*
+
+
+# System Files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,195 @@
+<!--Top Control-->
+<div class="top-control" *ngIf="options.outer_form == 'top' || options.outer_form == 'both'">
+  <div class="title">
+    <h2>Tabla</h2>
+  </div>
+  <div class="actions" *ngIf="options.editable.display || options.add.display">
+    <div class="button-wrapper simple-edit-buttons-wrapper fit" *ngIf="!options.editable.batch && !options.add.show" [ngClass]="{'icon': caption.icons}">
+      <div class="add" *ngIf="options.add.display">
+        <button (click)="options.add.show = !options.add.show;buildEditIndexControl()">
+          <i *ngIf="caption.icons" class="fa fa-plus" aria-hidden="true"></i>
+          {{caption.add.title}}
+        </button>
+      </div>
+      <div class="edit" *ngIf="options.editable.display">
+        <button (click)="options.editable.batch = !options.editable.batch; options.editable.show = !options.editable.show;buildEditIndexControl()">
+          <i *ngIf="caption.icons" class="fa fa-list" aria-hidden="true"></i>
+          {{caption.edit.batchEdit}}
+        </button>
+      </div>
+    </div>
+    <!--Simple Add-->
+    <div *ngIf="options.add.show">
+      <h3 *ngIf="options.add.caption == 'title' || options.add.caption == 'both'">{{caption.add.title}}</h3>
+        <form [formGroup]="myForm" (ngSubmit)="onSimpleSubmit(0,'add');options.add.show = !options.add.show" novalid>
+          <table>
+            <tr>
+              <td [colSpan]="headers.length">
+                <app-form-base [myForm]="myForm.controls.formArray.controls[0]" [inputsBase]="formInputs" ></app-form-base>
+              </td>
+              <td>
+                <button type="submit" [disabled]="!myForm.valid">{{caption.add.acceptAdd}}</button>
+                <button>{{caption.add.clearAdd}}</button>
+                <button type="button" (click)="options.add.show = !options.add.show;">{{caption.add.cancelAdd}}</button>
+              </td>
+            </tr>
+          </table>
+        </form>
+    </div>
+    <!--Batch Edit-->
+    <div *ngIf="options.editable.batch">
+      <h2>Edicion Masiva</h2>
+      <table>
+        <tr>
+          <td [colSpan]="headers.length+1">
+            <form [formGroup]="myForm" (ngSubmit)="onBatchSubmit('edit'); options.editable.batch = !options.editable.batch; options.editable.show = !options.editable.show;buildBatchEditIndexControl()" novalid>
+              <table>
+                <tr>
+                  <td [colSpan]="headers.length">
+                    <app-form-base [myForm]="myForm.controls.formArray.controls[0]" [inputsBase]="formInputs" ></app-form-base>
+                  </td>
+                  <td>
+                    <button type="submit" [disabled]="!myForm.valid" >{{caption.edit.batchEdit}}</button>
+                    <button (click)="onBatchSubmit('erase'); buildBatchEditIndexControl(); buildBlurControl(); options.editable.batch = !options.editable.batch; options.editable.show = !options.editable.show">{{caption.edit.batchDelete}}</button>
+                    <button (click)="buildBatchEditIndexControl(); buildBlurControl(); options.editable.batch = !options.editable.batch; options.editable.show = !options.editable.show">{{caption.edit.cancelEdit}}</button>
+                  </td>
+                </tr>
+              </table>
+            </form>
+          </td>
+        </tr>
+        <td>
+
+        </td>
+      </table>
+    </div>
+  </div>
+</div>
+<!--Data Table-->
+<div class="table">
+  <!--Table Headers-->
+  <div class="tr th">
+      <div class="td" *ngFor="let head of headers">{{head.value}}</div>
+      <div class="td" *ngIf="options.editable.show || options.editable.batch">{{caption.edit.head}}</div>
+  </div>
+  <div class="tbody">
+    <div class="tr" *ngFor="let row of tableData; let i=index;"  [ngClass]="{'focus': blurControl[i], 'selected': batchEditControl[i]}" (click)="handleRowClick(i)">
+
+      <!--Data Display-->
+      <ng-template [ngIf]="!editControl[i]">
+        <div class="td" *ngFor="let head of headers">
+          <span *ngIf="options.blankLabel && tableData[i][head.name]=='' && inputControl[head.name]!='boolean'">{{options.blankLabel}}</span>
+          <span *ngIf="tableData[i][head.name]!='' && inputControl[head.name]!='boolean'">{{tableData[i][head.name]}}</span>
+          <input *ngIf="inputControl[head.name]=='boolean'" class="checkbox" type="checkbox" [checked]="tableData[i][head.name]" disabled>
+        </div>
+      </ng-template>
+
+      <!--Data Simple Edit-->
+      <ng-template [ngIf]="editControl[i]">
+        <form [formGroup]="myForm" (ngSubmit)="onSimpleSubmit(i,'edit')" novalid>
+          <app-form-base [myForm]="myForm.controls.formArray.controls[0]" [inputsBase]="formInputs" [defaultValues]="row"></app-form-base>
+          <div class="simple-edit-buttons-wrapper" [ngClass]="{'icon': caption.icons}">
+            <button type="submit" [disabled]="!myForm.valid">
+              <i *ngIf="caption.icons" class="fa fa-check" aria-hidden="true"></i>
+              {{caption.edit.acceptEdit}}
+            </button>
+            <button type="button" (click)="editControl[i] = !editControl[i]">
+              <i *ngIf="caption.icons" class="fa fa-times" aria-hidden="true"></i>
+              {{caption.edit.cancelEdit}}
+            </button>
+          </div>
+        </form>
+      </ng-template>
+
+      <!--Data Simple Edit Control-->
+      <div class="td" *ngIf="options.editable.show && options.editable.delete && !editControl[i]">
+        <div class="simple-edit-buttons-wrapper fit" [ngClass]="{'icon': caption.icons}">
+          <button (click)="buildEditIndexControl();editControl[i] = !editControl[i]">
+            <i *ngIf="caption.icons" class="fa fa-pencil" aria-hidden="true"></i>
+            {{caption.edit.simpleEdit}}
+          </button>
+          <button *ngIf="options.editable.delete" (click)="onSimpleSubmit(i,'delete')">
+            <i *ngIf="caption.icons" class="fa fa-trash" aria-hidden="true"></i>
+            {{caption.edit.simpleDelete}}
+          </button>
+        </div>
+      </div>
+
+      <!--Batch Edit Control-->
+      <div class="td" *ngIf="options.editable.batch">
+        <input id="table-ui-row-{{i}}" type="checkbox" [checked]="batchEditControl[i]" (keyup)="$event.preventDefault();handleKeyBatchNavigation($event,i)" (keydown)="preventKeyDown($event)" >
+      </div>
+
+    </div>
+  </div>
+</div>
+<!--Bottom Control-->
+<div class="top-control" *ngIf="options.outer_form == 'bottom' || options.outer_form == 'both'">
+  <div class="title">
+    <h2>Tabla</h2>
+  </div>
+  <div class="actions" *ngIf="options.editable.display || options.add.display">
+    <div class="button-wrapper simple-edit-buttons-wrapper fit" *ngIf="!options.editable.batch && !options.add.show" [ngClass]="{'icon': caption.icons}">
+      <div class="add" *ngIf="options.add.display">
+        <button (click)="options.add.show = !options.add.show;buildEditIndexControl()">
+          <i *ngIf="caption.icons" class="fa fa-plus" aria-hidden="true"></i>
+          {{caption.add.title}}
+        </button>
+      </div>
+      <div class="edit" *ngIf="options.editable.display">
+        <button (click)="options.editable.batch = !options.editable.batch; options.editable.show = !options.editable.show;buildEditIndexControl()">
+          <i *ngIf="caption.icons" class="fa fa-list" aria-hidden="true"></i>
+          {{caption.edit.batchEdit}}
+        </button>
+      </div>
+    </div>
+    <!--Simple Add-->
+    <div *ngIf="options.add.show">
+      <h3 *ngIf="options.add.caption == 'title' || options.add.caption == 'both'">{{caption.add.title}}</h3>
+      <form [formGroup]="myForm" (ngSubmit)="onSimpleSubmit(0,'add');options.add.show = !options.add.show" novalid>
+        <table>
+          <tr>
+            <td [colSpan]="headers.length">
+              <app-form-base [myForm]="myForm.controls.formArray.controls[0]" [inputsBase]="formInputs" ></app-form-base>
+            </td>
+            <td>
+              <button type="submit" [disabled]="!myForm.valid">{{caption.add.acceptAdd}}</button>
+              <button>{{caption.add.clearAdd}}</button>
+              <button type="button" (click)="options.add.show = !options.add.show;">{{caption.add.cancelAdd}}</button>
+            </td>
+          </tr>
+        </table>
+      </form>
+    </div>
+    <!--Batch Edit-->
+    <div *ngIf="options.editable.batch">
+      <h2>Edicion Masiva</h2>
+      <table>
+        <tr>
+          <td [colSpan]="headers.length+1">
+            <form [formGroup]="myForm" (ngSubmit)="onBatchSubmit('edit'); options.editable.batch = !options.editable.batch; options.editable.show = !options.editable.show;buildBatchEditIndexControl()" novalid>
+              <table>
+                <tr>
+                  <td [colSpan]="headers.length">
+                    <app-form-base [myForm]="myForm.controls.formArray.controls[0]" [inputsBase]="formInputs" ></app-form-base>
+                  </td>
+                  <td>
+                    <button type="submit" [disabled]="!myForm.valid" >{{caption.edit.batchEdit}}</button>
+                    <button (click)="onBatchSubmit('erase'); buildBatchEditIndexControl(); buildBlurControl(); options.editable.batch = !options.editable.batch; options.editable.show = !options.editable.show">{{caption.edit.batchDelete}}</button>
+                    <button (click)="buildBatchEditIndexControl(); buildBlurControl(); options.editable.batch = !options.editable.batch; options.editable.show = !options.editable.show">{{caption.edit.cancelEdit}}</button>
+                  </td>
+                </tr>
+              </table>
+            </form>
+          </td>
+        </tr>
+        <td>
+
+        </td>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+

@@ -1,0 +1,7 @@
+<form [formGroup]="myForm">
+  <div  *ngFor="let chunk of inputsBase" class="inputs-wrapper">
+    <label>{{chunk.value}}:</label>
+    <input *ngIf="chunk?.type == 'text' || chunk?.type == 'number'" class="text" [type]="chunk.type" [formControlName]="chunk.name" [value]="defaultValues[chunk.name] ? defaultValues[chunk.name] : null" [placeholder]="chunk.value"/>
+    <input *ngIf="chunk?.type == 'checkbox'" [type]="chunk.type" class="checkbox" [formControlName]="chunk.name" [checked]="defaultValues[chunk.name]" (change)="$event.target.checked ? myForm.controls[chunk.name].setValue(true) : myForm.controls[chunk.name].setValue(false)"/>
+  </div>
+</form>
