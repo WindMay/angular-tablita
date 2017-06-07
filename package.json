@@ -1,6 +1,6 @@
 {
     "name": "angular-tablita",
-    "version": "0.1.25",
+    "version": "0.1.26",
     "description": "Angular ",
     "main": "./bundles/angular-tablita.umd.js",
     "module": "./modules/angular-tablita.es5.js",
